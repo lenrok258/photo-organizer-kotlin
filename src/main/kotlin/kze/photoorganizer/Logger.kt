@@ -1,5 +1,10 @@
 package kze.photoorganizer
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 private enum class LogLevel {
     INFO, ERROR
 }
@@ -15,5 +20,6 @@ fun error(message: String) {
 }
 
 private fun formatMessage(level: LogLevel, message: String): String {
-    return "[date] [$level] $message";
+    val nowString = LocalDateTime.now().format(DATE_FORMATTER)
+    return "[$nowString] [$level] $message";
 }
