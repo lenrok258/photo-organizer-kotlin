@@ -9,23 +9,18 @@ private enum class LogLevel {
     INFO, ERROR
 }
 
-fun info(message: String) {
-    val messageFormatted = formatMessage(LogLevel.INFO, message)
-    println(messageFormatted)
-}
-
 fun info(message: String, vararg args: Any) {
-    val messageFormatted = formatMessage(LogLevel.INFO, message, args)
+    val messageFormatted = formatMessage(LogLevel.INFO, message, *args)
     println(messageFormatted)
 }
 
-fun error(message: String) {
-    val messageFormatted = formatMessage(LogLevel.ERROR, message)
+fun error(message: String, vararg args: Any) {
+    val messageFormatted = formatMessage(LogLevel.ERROR, message, *args)
     println(messageFormatted)
 }
 
-private fun formatMessage(level: LogLevel, message: String, args: Array<out Any> = emptyArray()): String {
+private fun formatMessage(level: LogLevel, message: String, vararg args: Any): String {
     val nowString = LocalDateTime.now().format(DATE_FORMATTER)
-    val messageFormatted = message.format(args)
-    return "[$nowString] [$level] $messageFormatted";
+    val messageFormatted = message.format(*args)
+    return "[$nowString] [$level] $messageFormatted"
 }

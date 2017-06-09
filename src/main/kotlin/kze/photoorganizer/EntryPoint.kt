@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 
     validateInputParams(args)
     val inputDirPath: Path = getInputDirectory(args)
-    val outputDirPath: Path = createOutputDirectory(inputDirPath)
+    val outputDirPath: Path = createOutputDirectory()
     val listFilesPaths: List<Path> = listFilesPaths(inputDirPath)
 
     info("Stop")
@@ -42,7 +42,7 @@ private fun getInputDirectory(args: Array<String>): Path {
     return path
 }
 
-fun createOutputDirectory(inputDirPath: Path): Path {
+fun createOutputDirectory(): Path {
     val outputPath = Paths.get(OUTPUT_DIRECTORY_NAME)
     Files.deleteIfExists(outputPath)
     Files.createDirectory(outputPath)
@@ -54,7 +54,6 @@ fun listFilesPaths(inputDirPath: Path): List<Path> {
     val paths = Files.walk(inputDirPath)
             .filter { path -> path.toFile().isFile }
             .collect(Collectors.toList())
-    info("Paths to organize: %s", paths)
+    info("Number of files to organize=[%s]", paths.size)
     return paths
-
 }
