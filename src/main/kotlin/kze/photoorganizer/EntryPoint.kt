@@ -1,9 +1,10 @@
 package kze.photoorganizer
 
-import java.io.File
+import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.stream.Collectors
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -12,7 +13,7 @@ fun main(args: Array<String>) {
     validateInputParams(args)
     val inputDirPath: Path = getInputDirectory(args)
     val outputDirPath: Path = createOutputDirectory(inputDirPath)
-//    val listFiles: File? = listFiles(inputDirPath)
+    val listFilesPaths: List<Path> = listFilesPaths(inputDirPath)
 
     info("Stop")
 }
@@ -43,13 +44,17 @@ private fun getInputDirectory(args: Array<String>): Path {
 
 fun createOutputDirectory(inputDirPath: Path): Path {
     val outputPath = Paths.get(OUTPUT_DIRECTORY_NAME)
+    Files.deleteIfExists(outputPath)
     Files.createDirectory(outputPath)
     info("Output directory=[${outputPath.toAbsolutePath()}] created")
     return outputPath
 }
 
-/*fun listFiles(inputDirPath: Path): File? {
-    Files.walk(inputDirPath)
-            .filter()
+fun listFilesPaths(inputDirPath: Path): List<Path> {
+    val paths = Files.walk(inputDirPath)
+            .filter { path -> path.toFile().isFile }
+            .collect(Collectors.toList())
+    info("Paths to organize: %s", paths)
+    return paths
 
-}*/
+}

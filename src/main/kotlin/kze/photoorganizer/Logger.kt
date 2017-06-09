@@ -14,12 +14,18 @@ fun info(message: String) {
     println(messageFormatted)
 }
 
+fun info(message: String, vararg args: Any) {
+    val messageFormatted = formatMessage(LogLevel.INFO, message, args)
+    println(messageFormatted)
+}
+
 fun error(message: String) {
     val messageFormatted = formatMessage(LogLevel.ERROR, message)
     println(messageFormatted)
 }
 
-private fun formatMessage(level: LogLevel, message: String): String {
+private fun formatMessage(level: LogLevel, message: String, args: Array<out Any> = emptyArray()): String {
     val nowString = LocalDateTime.now().format(DATE_FORMATTER)
-    return "[$nowString] [$level] $message";
+    val messageFormatted = message.format(args)
+    return "[$nowString] [$level] $messageFormatted";
 }
