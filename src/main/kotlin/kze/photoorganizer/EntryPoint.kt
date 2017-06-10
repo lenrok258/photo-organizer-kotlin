@@ -1,15 +1,13 @@
 package kze.photoorganizer
 
-import com.drew.imaging.ImageMetadataReader
-import com.drew.imaging.ImageProcessingException
 import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
+import kze.photoorganizer.datetime.DatetimeFile
+import kze.photoorganizer.datetime.computeDatetimeFile
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.time.LocalDateTime
 import java.util.stream.Collectors
 import kotlin.system.exitProcess
-import com.drew.metadata.exif.ExifSubIFDDirectory
 
 fun main(args: Array<String>) {
     info("Start")
@@ -18,7 +16,7 @@ fun main(args: Array<String>) {
     val inputDirPath: Path = getInputDirectory(args)
     val outputDirPath: Path = createOutputDirectory()
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
-    val filesWithDatetimes = computeFilesWithDatetimes(filesPaths)
+    val filesWithDatetimes = computeDatetimeFiles(filesPaths)
     // Segregate files
 
     info("Stop")
@@ -64,21 +62,9 @@ private fun listFilesPaths(inputDirPath: Path): List<Path> {
     return paths
 }
 
-private fun computeFilesWithDatetimes(listFilesPaths: List<Path>): List<FileWithDatetime> {
+private fun computeDatetimeFiles(listFilesPaths: List<Path>): List<DatetimeFile> {
     return listFilesPaths
-            .map(::computeFileWithDatetime)
+            .map(::computeDatetimeFile)
 }
 
-private fun computeFileWithDatetime(path: Path): FileWithDatetime {
-    // To remember: collision detection by computing hashes
-    try {
-        val metadata = ImageMetadataReader.readMetadata(path.toFile())
-        val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
-        val date = exifSubIFDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
-        debug("EXIF datetime for file $path = [%s]", date)
-    } catch (e: ImageProcessingException) {
-        warn("Cannot obtain EXIF for $path")
-    }
 
-    return FileWithDatetime(path, LocalDateTime.now())
-}
