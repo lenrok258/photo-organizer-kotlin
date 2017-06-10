@@ -6,22 +6,27 @@ import java.time.format.DateTimeFormatter
 private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 private enum class LogLevel {
-    INFO, WARN, ERROR
+    DEBUG, INFO, WARN, ERROR
+}
+
+fun debug(message: String, vararg args: Any) {
+    logMessage(LogLevel.DEBUG, message, *args)
 }
 
 fun info(message: String, vararg args: Any) {
-    val messageFormatted = formatMessage(LogLevel.INFO, message, *args)
-    println(messageFormatted)
+    logMessage(LogLevel.INFO, message, *args)
 }
 
 fun warn(message: String, vararg args: Any) {
-    val messageFormatted = formatMessage(LogLevel.WARN, message, *args)
-    println(messageFormatted)
+    logMessage(LogLevel.WARN, message, *args)
 }
 
-
 fun error(message: String, vararg args: Any) {
-    val messageFormatted = formatMessage(LogLevel.ERROR, message, *args)
+    logMessage(LogLevel.ERROR, message, *args)
+}
+
+private fun logMessage(level: LogLevel, message: String, vararg args: Any) {
+    val messageFormatted = formatMessage(level, message, *args)
     println(messageFormatted)
 }
 

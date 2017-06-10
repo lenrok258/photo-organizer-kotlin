@@ -11,9 +11,6 @@ import java.util.stream.Collectors
 import kotlin.system.exitProcess
 import com.drew.metadata.exif.ExifSubIFDDirectory
 
-
-
-
 fun main(args: Array<String>) {
     info("Start")
 
@@ -78,7 +75,7 @@ private fun computeFileWithDatetime(path: Path): FileWithDatetime {
         val metadata = ImageMetadataReader.readMetadata(path.toFile())
         val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
         val date = exifSubIFDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
-        info("EXIF datetime for file $path = [%s]", date)
+        debug("EXIF datetime for file $path = [%s]", date)
     } catch (e: ImageProcessingException) {
         warn("Cannot obtain EXIF for $path")
     }
