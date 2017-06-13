@@ -5,6 +5,7 @@ import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
 import kze.photoorganizer.datetime.DatetimeFile
 import kze.photoorganizer.datetime.computeDatetimeFile
 import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils.stripAccents
 import java.nio.file.Files
 import java.nio.file.Path
@@ -53,7 +54,7 @@ private fun getInputDirectory(args: Array<String>): Path {
 
 private fun createOutputDirectory(): Path {
     val outputPath = Paths.get(OUTPUT_DIRECTORY_NAME)
-    Files.deleteIfExists(outputPath)
+    FileUtils.deleteDirectory(outputPath.toFile())
     Files.createDirectory(outputPath)
     info("Output directory=[${outputPath.toAbsolutePath()}] created")
     return outputPath

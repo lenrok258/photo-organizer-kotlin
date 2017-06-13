@@ -24,6 +24,7 @@ dependencies {
     compile "com.drewnoakes:metadata-extractor:2.10.1"
     compile "commons-codec:commons-codec:1.10"
     compile "org.apache.commons:commons-lang3:3.0"
+    compile "commons-io:commons-io:2.5"
 //    testCompile 'junit:junit:4.11'
 //    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
