@@ -14,14 +14,7 @@ import java.time.ZoneId
 
 
 fun computeDatetimeFile(path: Path): DatetimeFile {
-
-    // To remember: collision detection by computing hashes
-
-    var datetime = obtainDatetimeFromEXIF(path)
-    if (datetime == null) {
-        datetime = obtainDatetimeFromFile(path)
-    }
-
+    val datetime = obtainDatetimeFromEXIF(path) ?: obtainDatetimeFromFile(path)
     return DatetimeFile(path, datetime)
 }
 
@@ -30,7 +23,7 @@ private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
         val metadata = ImageMetadataReader.readMetadata(path.toFile())
         val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
         val date = exifSubIFDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
-        debug("EXIF datetime [$date] for file [$path]")
+        debug("EXIF datetime [$date] for a file [$path]")
         return toLocalDatetime(date.toInstant());
     } catch (e: ImageProcessingException) {
         warn("Cannot obtain EXIF for [$path]")
@@ -41,7 +34,7 @@ private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
 private fun obtainDatetimeFromFile(path: Path): LocalDateTime {
     val attributes = Files.readAttributes(path, BasicFileAttributes::class.java)
     val creationTime = attributes.creationTime()
-    debug("Creation datetime [$creationTime] obtained from file attributes for file [$path]")
+    debug("Creation datetime [$creationTime] obtained from file attributes for a file [$path]")
     return toLocalDatetime(creationTime.toInstant())
 }
 
