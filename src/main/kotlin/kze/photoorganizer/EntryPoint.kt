@@ -2,11 +2,12 @@ package kze.photoorganizer
 
 import kze.photoorganizer.config.LOCALE
 import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
-import kze.photoorganizer.datetime.DatetimeFile
-import kze.photoorganizer.datetime.computeDatetimeFile
+import kze.photoorganizer.timestamp.FileWithTimestamp
+import kze.photoorganizer.timestamp.computeDatetimeFile
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils.stripAccents
+import java.lang.System.currentTimeMillis
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -15,6 +16,7 @@ import java.util.stream.Collectors
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
+    Statistics.startMillis = currentTimeMillis()
     info("Start")
 
     validateInputParams(args)
@@ -25,7 +27,10 @@ fun main(args: Array<String>) {
     val filesToOrganize = deduplicate(filesWithDatetimes)
     organizeFiles(outputDirPath, filesToOrganize)
 
+    info(Statistics.report())
+
     info("Stop")
+    Statistics.stopMillis = currentTimeMillis()
 }
 
 private fun printProgramUsage() {
@@ -65,24 +70,26 @@ private fun listFilesPaths(inputDirPath: Path): List<Path> {
             .filter { path -> path.toFile().isFile }
             .collect(Collectors.toList())
     info("Number of files to organize=[%s]", paths.size)
+    Statistics.filesToOrganize = paths.size
     return paths
 }
 
-private fun computeDatetimeFiles(listFilesPaths: List<Path>): List<DatetimeFile> {
+private fun computeDatetimeFiles(listFilesPaths: List<Path>): List<FileWithTimestamp> {
     return listFilesPaths
             .map(::computeDatetimeFile)
 }
 
-private fun deduplicate(filesWithDatetimes: List<DatetimeFile>): List<DatetimeFile> {
-    info("About to search for duplicates")
-    val result = ArrayList<DatetimeFile>()
-    val hashesMap = HashMap<String, DatetimeFile>()
-    for (file in filesWithDatetimes) {
+private fun deduplicate(filesWithWithTimestamps: List<FileWithTimestamp>): List<FileWithTimestamp> {
+    info("About to search for filesWithDuplicatedContent")
+    val result = ArrayList<FileWithTimestamp>()
+    val hashesMap = HashMap<String, FileWithTimestamp>()
+    for (file in filesWithWithTimestamps) {
         val md5Hex = DigestUtils.md5Hex(file.filePath.toFile().inputStream())
         debug("MD5 [$md5Hex] for a file [${file.filePath}]")
         if (hashesMap.containsKey(md5Hex)) {
             val existingFile = hashesMap.get(md5Hex)
             warn("Duplicate found. Files: [${file.filePath}] and [$existingFile] have the same hash [$md5Hex]. Duplicate will be skipped")
+            Statistics.filesWithDuplicatedContent++
             continue
         }
         hashesMap.put(md5Hex, file)
@@ -91,7 +98,7 @@ private fun deduplicate(filesWithDatetimes: List<DatetimeFile>): List<DatetimeFi
     return result
 }
 
-private fun organizeFiles(outputDir: Path, filesToOrganize: List<DatetimeFile>) {
+private fun organizeFiles(outputDir: Path, filesToOrganize: List<FileWithTimestamp>) {
     filesToOrganize
             .forEach {
                 val targetDir = createTargetDirectory(outputDir, it)
@@ -101,8 +108,8 @@ private fun organizeFiles(outputDir: Path, filesToOrganize: List<DatetimeFile>) 
 
 }
 
-private fun createTargetDirectory(outputDir: Path, datetimeFile: DatetimeFile): Path {
-    val dateTime = datetimeFile.dateTime
+private fun createTargetDirectory(outputDir: Path, fileWithTimestamp: FileWithTimestamp): Path {
+    val dateTime = fileWithTimestamp.dateTime
     val year = dateTime.format(DateTimeFormatter.ofPattern("yyyy"))
     val monthNumber = dateTime.format(DateTimeFormatter.ofPattern("MM"))
     val monthName = stripAccents(dateTime.format(DateTimeFormatter.ofPattern("LLLL", LOCALE)).capitalize())
@@ -114,19 +121,30 @@ private fun createTargetDirectory(outputDir: Path, datetimeFile: DatetimeFile): 
     return targetPath
 }
 
-private fun createTargetFilePath(targetDir: Path, datetimeFile: DatetimeFile): Path {
-    val dateTime = datetimeFile.dateTime
+private fun createTargetFilePath(targetDir: Path, fileWithTimestamp: FileWithTimestamp): Path {
+    val dateTime = fileWithTimestamp.dateTime
     val baseFileName = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss"))
-    val extension = datetimeFile.filePath.toFile().extension
+    val extension = fileWithTimestamp.filePath.toFile().extension
     val targetFileName = "$baseFileName.$extension"
     val result = Paths.get(targetDir.toString(), targetFileName)
     return result
 }
 
-private fun copyFile(datetimeFile: DatetimeFile, targetPath: Path) {
-    info("[${datetimeFile.filePath.fileName}] => [$targetPath]")
-    //TODO: Check if file already exists and add postfix _X
-    Files.copy(datetimeFile.filePath, targetPath)
+private fun copyFile(fileWithTimestamp: FileWithTimestamp, targetPath: Path) {
+    var targetPathNonExistence = targetPath // TwinPeaks reference
+    var i = 1
+    while (Files.exists(targetPathNonExistence)) {
+        targetPathNonExistence = computeTargetPathWithPostfix(targetPath, i++.toString())
+        warn("Target file already exists. Trying version with postfix=[$targetPathNonExistence]")
+    }
+
+    info("[${fileWithTimestamp.filePath.fileName}] => [$targetPathNonExistence]")
+    Files.copy(fileWithTimestamp.filePath, targetPathNonExistence)
+}
+
+private fun computeTargetPathWithPostfix(targetPath: Path, postfix: String): Path {
+    val file = targetPath.toFile()
+    return Paths.get(file.parent, "${file.nameWithoutExtension}_${postfix}.${file.extension}")
 }
 
 

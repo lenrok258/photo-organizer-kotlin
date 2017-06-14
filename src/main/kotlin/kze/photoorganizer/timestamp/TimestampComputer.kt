@@ -1,8 +1,9 @@
-package kze.photoorganizer.datetime
+package kze.photoorganizer.timestamp
 
 import com.drew.imaging.ImageMetadataReader
 import com.drew.imaging.ImageProcessingException
 import com.drew.metadata.exif.ExifSubIFDDirectory
+import kze.photoorganizer.Statistics
 import kze.photoorganizer.debug
 import kze.photoorganizer.warn
 import java.nio.file.Files
@@ -13,14 +14,14 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 
-fun computeDatetimeFile(path: Path): DatetimeFile {
+fun computeDatetimeFile(path: Path): FileWithTimestamp {
     val datetime = obtainDatetimeFromEXIF(path) ?: obtainDatetimeFromFile(path)
-    return DatetimeFile(path, datetime)
+    return FileWithTimestamp(path, datetime)
 }
 
 private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
     try {
-        debug("Reading EXIF datetime for a file [$path]")
+        debug("Reading EXIF timestamp for a file [$path]")
         val metadata = ImageMetadataReader.readMetadata(path.toFile())
         val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
         if (exifSubIFDirectory == null) {
@@ -33,7 +34,8 @@ private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
             return null
         }
         val dateTime = toLocalDatetime(date.toInstant());
-        debug("EXIF datetime [$dateTime] for a file [$path]")
+        debug("EXIF timestamp [$dateTime] for a file [$path]")
+        Statistics.filesWithValidEXIFData++
         return dateTime
     } catch (e: ImageProcessingException) {
         warn("Cannot obtain EXIF for [$path]")
@@ -44,7 +46,7 @@ private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
 private fun obtainDatetimeFromFile(path: Path): LocalDateTime {
     val attributes = Files.readAttributes(path, BasicFileAttributes::class.java)
     val creationTime = attributes.creationTime()
-    debug("Creation datetime [$creationTime] obtained from file attributes for a file [$path]")
+    debug("Creation timestamp [$creationTime] obtained from file attributes for a file [$path]")
     return toLocalDatetime(creationTime.toInstant())
 }
 
