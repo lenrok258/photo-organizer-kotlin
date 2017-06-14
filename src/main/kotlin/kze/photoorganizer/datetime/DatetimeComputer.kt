@@ -20,11 +20,21 @@ fun computeDatetimeFile(path: Path): DatetimeFile {
 
 private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
     try {
+        debug("Reading EXIF datetime for a file [$path]")
         val metadata = ImageMetadataReader.readMetadata(path.toFile())
         val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
+        if (exifSubIFDirectory == null) {
+            warn("Unable to obtain exifSubIFDirectory from EXIF for a file [$path]")
+            return null
+        }
         val date = exifSubIFDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
-        debug("EXIF datetime [$date] for a file [$path]")
-        return toLocalDatetime(date.toInstant());
+        if (date == null) {
+            warn("Unable to obtain date from EXIF for a file [$path]")
+            return null
+        }
+        val dateTime = toLocalDatetime(date.toInstant());
+        debug("EXIF datetime [$dateTime] for a file [$path]")
+        return dateTime
     } catch (e: ImageProcessingException) {
         warn("Cannot obtain EXIF for [$path]")
         return null
