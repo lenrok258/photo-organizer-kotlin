@@ -12,7 +12,14 @@ object Statistics {
     var datetimesFromFileAttributes = 0
     var filesCopied = 0
 
-    fun report(): String {
+    private var extensionMap = HashMap<String, Int>()
+
+    fun reportExtension(extension: String) {
+        val value = extensionMap.getOrDefault(extension, 0)
+        extensionMap.put(extension, value.inc())
+    }
+
+    fun getReport(): String {
 
         val duration = Duration.ofMillis(stopMillis - startMillis)
 
@@ -27,12 +34,11 @@ object Statistics {
             |  Datetimes from file attributes   |  $datetimesFromFileAttributes
             |  Files with duplicated content    |  $filesWithDuplicatedContent
             |  Files copied                     |  $filesCopied
+            |  Files extensions                 |  $extensionMap
             |  Execution time (mm:ss:ms)        |  ${duration.toMinutes()}:${duration.seconds}:${duration.toMillis()}
             |-----------------------------------------------------------------------------
 
         """.trimMargin()
-
-
     }
 
 }

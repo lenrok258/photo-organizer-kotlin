@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
     info("Stop")
 
     Statistics.stopMillis = currentTimeMillis()
-    info(Statistics.report())
+    info(Statistics.getReport())
 }
 
 private fun printProgramUsage() {
@@ -140,7 +140,10 @@ private fun copyFile(fileWithTimestamp: FileWithTimestamp, targetPath: Path) {
 
     info("[${fileWithTimestamp.filePath.fileName}] => [$targetPathNonExistence]")
     Files.copy(fileWithTimestamp.filePath, targetPathNonExistence)
+
+    var extension = targetPathNonExistence.toFile().extension
     Statistics.filesCopied++
+    Statistics.reportExtension(extension)
 }
 
 private fun computeTargetPathWithPostfix(targetPath: Path, postfix: String): Path {
