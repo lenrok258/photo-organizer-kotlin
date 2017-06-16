@@ -27,10 +27,10 @@ fun main(args: Array<String>) {
     val filesToOrganize = deduplicate(filesWithDatetimes)
     organizeFiles(outputDirPath, filesToOrganize)
 
-    info(Statistics.report())
-
     info("Stop")
+
     Statistics.stopMillis = currentTimeMillis()
+    info(Statistics.report())
 }
 
 private fun printProgramUsage() {
@@ -140,6 +140,7 @@ private fun copyFile(fileWithTimestamp: FileWithTimestamp, targetPath: Path) {
 
     info("[${fileWithTimestamp.filePath.fileName}] => [$targetPathNonExistence]")
     Files.copy(fileWithTimestamp.filePath, targetPathNonExistence)
+    Statistics.filesCopied++
 }
 
 private fun computeTargetPathWithPostfix(targetPath: Path, postfix: String): Path {

@@ -47,6 +47,7 @@ private fun obtainDatetimeFromFile(path: Path): LocalDateTime {
     val attributes = Files.readAttributes(path, BasicFileAttributes::class.java)
     val creationTime = attributes.creationTime()
     debug("Creation timestamp [$creationTime] obtained from file attributes for a file [$path]")
+    Statistics.datetimesFromFileAttributes++
     return toLocalDatetime(creationTime.toInstant())
 }
 
