@@ -3,7 +3,7 @@ package kze.photoorganizer
 import kze.photoorganizer.config.LOCALE
 import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
 import kze.photoorganizer.timestamp.FileWithTimestamp
-import kze.photoorganizer.timestamp.computeDatetimeFile
+import kze.photoorganizer.timestamp.computeFileWithTimestamp
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils.stripAccents
@@ -76,7 +76,7 @@ private fun listFilesPaths(inputDirPath: Path): List<Path> {
 
 private fun computeDatetimeFiles(listFilesPaths: List<Path>): List<FileWithTimestamp> {
     return listFilesPaths
-            .map(::computeDatetimeFile)
+            .map(::computeFileWithTimestamp)
 }
 
 private fun deduplicate(filesWithWithTimestamps: List<FileWithTimestamp>): List<FileWithTimestamp> {

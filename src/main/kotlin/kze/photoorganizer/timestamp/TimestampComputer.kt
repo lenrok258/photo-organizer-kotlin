@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 
-fun computeDatetimeFile(path: Path): FileWithTimestamp {
+fun computeFileWithTimestamp(path: Path): FileWithTimestamp {
     val datetime = obtainDatetimeFromEXIF(path) ?: obtainDatetimeFromFile(path)
     return FileWithTimestamp(path, datetime)
 }
@@ -23,16 +23,19 @@ private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
     try {
         debug("Reading EXIF timestamp for a file [$path]")
         val metadata = ImageMetadataReader.readMetadata(path.toFile())
+
         val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
         if (exifSubIFDirectory == null) {
             warn("Unable to obtain exifSubIFDirectory from EXIF for a file [$path]")
             return null
         }
+
         val date = exifSubIFDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)
         if (date == null) {
             warn("Unable to obtain date from EXIF for a file [$path]")
             return null
         }
+
         val dateTime = toLocalDatetime(date.toInstant());
         debug("EXIF timestamp [$dateTime] for a file [$path]")
         Statistics.filesWithValidEXIFData++
@@ -52,6 +55,6 @@ private fun obtainDatetimeFromFile(path: Path): LocalDateTime {
 }
 
 private fun toLocalDatetime(instant: Instant): LocalDateTime {
-    return LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    return LocalDateTime.ofInstant(instant, ZoneId.of("UTC"))
 }
 
