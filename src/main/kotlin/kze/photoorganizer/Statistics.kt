@@ -35,7 +35,7 @@ object Statistics {
             |  Files with duplicated content    |  $filesWithDuplicatedContent
             |  Files copied                     |  $filesCopied
             |  Files extensions                 |  $extensionMap
-            |  Execution time (mm:ss:ms)        |  ${duration.toMinutes()}:${duration.seconds}:${duration.toMillis()}
+            |  Execution time (mm:ss:ms)        |  ${duration.toMinutes()}:${duration.seconds % 60}:${duration.toMillis() % 1000}
             |-----------------------------------------------------------------------------
 
         """.trimMargin()

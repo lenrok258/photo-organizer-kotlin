@@ -4,7 +4,6 @@ import kze.photoorganizer.config.LOCALE
 import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
 import kze.photoorganizer.timestamp.FileWithTimestamp
 import kze.photoorganizer.timestamp.computeFileWithTimestamp
-import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils.stripAccents
 import java.lang.System.currentTimeMillis
@@ -13,14 +12,13 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
 import java.util.stream.Collectors
-import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     Statistics.startMillis = currentTimeMillis()
     info("Start")
 
-    validateInputParams(args)
-    val inputDirPath: Path = getInputDirectory(args)
+    val parameters = ProgramParameters(args)
+    val inputDirPath: Path = parameters.getInputDirectory(args)
     val outputDirPath: Path = createOutputDirectory()
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
     val filesWithDatetimes = computeDatetimeFiles(filesPaths)
@@ -31,30 +29,6 @@ fun main(args: Array<String>) {
 
     Statistics.stopMillis = currentTimeMillis()
     info(Statistics.getReport())
-}
-
-private fun printProgramUsage() {
-    info("Usage: ./run.sh {directory-with-photos-to-process}")
-}
-
-private fun validateInputParams(args: Array<String>) {
-    if (args.size < 1) {
-        error("Missing required argument")
-        printProgramUsage()
-        exitProcess(-1)
-    }
-}
-
-private fun getInputDirectory(args: Array<String>): Path {
-    val inputDirString = args[0]
-    val path = Paths.get(inputDirString)
-    if (Files.exists(path).not()) {
-        error("Given directory=[$inputDirString] does not exist")
-        printProgramUsage()
-        exitProcess(-1)
-    }
-    info("Input directory=[${path.toAbsolutePath()}]")
-    return path
 }
 
 private fun createOutputDirectory(): Path {
@@ -77,25 +51,6 @@ private fun listFilesPaths(inputDirPath: Path): List<Path> {
 private fun computeDatetimeFiles(listFilesPaths: List<Path>): List<FileWithTimestamp> {
     return listFilesPaths
             .map(::computeFileWithTimestamp)
-}
-
-private fun deduplicate(filesWithWithTimestamps: List<FileWithTimestamp>): List<FileWithTimestamp> {
-    info("About to search for filesWithDuplicatedContent")
-    val result = ArrayList<FileWithTimestamp>()
-    val hashesMap = HashMap<String, FileWithTimestamp>()
-    for (file in filesWithWithTimestamps) {
-        val md5Hex = DigestUtils.md5Hex(file.filePath.toFile().inputStream())
-        debug("MD5 [$md5Hex] for a file [${file.filePath}]")
-        if (hashesMap.containsKey(md5Hex)) {
-            val existingFile = hashesMap.get(md5Hex)
-            warn("Duplicate found. Files: [${file.filePath}] and [$existingFile] have the same hash [$md5Hex]. Duplicate will be skipped")
-            Statistics.filesWithDuplicatedContent++
-            continue
-        }
-        hashesMap.put(md5Hex, file)
-        result.add(file)
-    }
-    return result
 }
 
 private fun organizeFiles(outputDir: Path, filesToOrganize: List<FileWithTimestamp>) {
