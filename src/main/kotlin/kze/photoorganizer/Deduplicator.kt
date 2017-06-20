@@ -4,11 +4,13 @@ import kze.photoorganizer.timestamp.FileWithTimestamp
 import org.apache.commons.codec.digest.DigestUtils
 
 
-fun deduplicate(filesWithWithTimestamps: List<FileWithTimestamp>): List<FileWithTimestamp> {
+fun deduplicate(filesWithTimestamps: List<FileWithTimestamp>): List<FileWithTimestamp> {
+
     info("About to search for files with duplicated content")
     val result = ArrayList<FileWithTimestamp>()
     val hashesMap = HashMap<String, FileWithTimestamp>()
-    for (file in filesWithWithTimestamps) {
+
+    for (file in filesWithTimestamps) {
         val md5Hex = DigestUtils.md5Hex(file.filePath.toFile().inputStream())
         debug("MD5 [$md5Hex] for a file [${file.filePath}]")
         if (hashesMap.containsKey(md5Hex)) {
@@ -20,5 +22,6 @@ fun deduplicate(filesWithWithTimestamps: List<FileWithTimestamp>): List<FileWith
         hashesMap.put(md5Hex, file)
         result.add(file)
     }
+
     return result
 }

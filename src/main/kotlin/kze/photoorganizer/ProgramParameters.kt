@@ -25,13 +25,19 @@ class ProgramParameters(args: Array<String>) {
 
     private fun validate(args: Array<String>) {
         if (args.size < 1) {
-            error("Missing required argument")
+            error("Missing required argument ")
             printProgramUsage()
             exitProcess(-1)
         }
     }
 
     private fun printProgramUsage() {
-        info("Usage: ./run.sh {directory-with-files-to-process}")
+        info("""
+            |
+            |
+            |Usage:
+            |    ./run.sh {directory-with-files-to-process}
+            |"""
+                .trimMargin())
     }
 }

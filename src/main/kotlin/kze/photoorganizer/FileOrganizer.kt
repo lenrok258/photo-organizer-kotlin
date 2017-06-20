@@ -1,6 +1,5 @@
 package kze.photoorganizer
 
-import kze.photoorganizer.config.LOCALE
 import kze.photoorganizer.timestamp.FileWithTimestamp
 import org.apache.commons.lang3.StringUtils
 import java.nio.file.Files
@@ -9,12 +8,11 @@ import java.nio.file.Paths
 import java.time.format.DateTimeFormatter
 
 fun organizeFiles(outputDir: Path, filesToOrganize: List<FileWithTimestamp>) {
-    filesToOrganize
-            .forEach {
-                val targetDir = createTargetDirectory(outputDir, it)
-                val targetFilePath = createTargetFilePath(targetDir, it)
-                copyFile(it, targetFilePath)
-            }
+    filesToOrganize.forEach {
+        val targetDir = createTargetDirectory(outputDir, it)
+        val targetFilePath = createTargetFilePath(targetDir, it)
+        copyFile(it, targetFilePath)
+    }
 
 }
 

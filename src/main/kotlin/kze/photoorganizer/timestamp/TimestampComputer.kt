@@ -18,17 +18,18 @@ fun computeFilesWithTimestamps(listFilesPaths: List<Path>): List<FileWithTimesta
             .map(::computeFileWithTimestamp)
 }
 
-fun computeFileWithTimestamp(path: Path): FileWithTimestamp {
-    val datetime = obtainDatetimeFromEXIF(path) ?: obtainDatetimeFromFile(path)
+private fun computeFileWithTimestamp(path: Path): FileWithTimestamp {
+    val datetime = fromEXIF(path) ?: fromFileAttributes(path)
     return FileWithTimestamp(path, datetime)
 }
 
-private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
+private fun fromEXIF(path: Path): LocalDateTime? {
     try {
         debug("Reading EXIF timestamp for a file [$path]")
-        val metadata = ImageMetadataReader.readMetadata(path.toFile())
+        val exifSubIFDirectory = ImageMetadataReader
+                .readMetadata(path.toFile())
+                .getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
 
-        val exifSubIFDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory::class.java)
         if (exifSubIFDirectory == null) {
             warn("Unable to obtain exifSubIFDirectory from EXIF for a file [$path]")
             return null
@@ -50,7 +51,7 @@ private fun obtainDatetimeFromEXIF(path: Path): LocalDateTime? {
     }
 }
 
-private fun obtainDatetimeFromFile(path: Path): LocalDateTime {
+private fun fromFileAttributes(path: Path): LocalDateTime {
     val attributes = Files.readAttributes(path, BasicFileAttributes::class.java)
     val creationTime = attributes.creationTime()
     debug("Creation timestamp [$creationTime] obtained from file attributes for a file [$path]")

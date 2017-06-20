@@ -1,25 +1,24 @@
 package kze.photoorganizer
 
-import kze.photoorganizer.config.OUTPUT_DIRECTORY_NAME
-import org.apache.commons.io.FileUtils
-import java.nio.file.Files
+import org.apache.commons.io.FileUtils.deleteDirectory
+import java.nio.file.Files.createDirectory
+import java.nio.file.Files.walk
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.stream.Collectors
+import java.util.stream.Collectors.toList
 
 fun createOutputDirectory(): Path {
     val outputPath = Paths.get(OUTPUT_DIRECTORY_NAME)
-    FileUtils.deleteDirectory(outputPath.toFile())
-    Files.createDirectory(outputPath)
-    info("Output directory=[${outputPath.toAbsolutePath()}] created")
-    return outputPath
+    return outputPath.apply {
+        deleteDirectory(this.toFile())
+        createDirectory(this)
+        info("Output directory=[${this.toAbsolutePath()}] created")
+    }
 }
 
 fun listFilesPaths(inputDirPath: Path): List<Path> {
-    val paths = Files.walk(inputDirPath)
+    return walk(inputDirPath)
             .filter { path -> path.toFile().isFile }
-            .collect(Collectors.toList())
-    info("Number of files to organize=[%s]", paths.size)
-    Statistics.filesToOrganize = paths.size
-    return paths
+            .collect(toList())
+            .apply { Statistics.filesToOrganize = this.size }
 }

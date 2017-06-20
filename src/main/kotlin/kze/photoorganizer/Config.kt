@@ -1,4 +1,4 @@
-package kze.photoorganizer.config
+package kze.photoorganizer
 
 import java.util.*
 
