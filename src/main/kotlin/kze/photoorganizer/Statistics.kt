@@ -16,12 +16,10 @@ object Statistics {
 
     fun reportStart() {
         startMillis = System.currentTimeMillis()
-        info("Start")
     }
 
     fun reportStop() {
         stopMillis = System.currentTimeMillis()
-        info("Stop")
     }
 
     fun reportExtension(extension: String) {

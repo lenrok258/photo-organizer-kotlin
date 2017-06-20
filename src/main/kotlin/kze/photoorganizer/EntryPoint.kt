@@ -8,6 +8,7 @@ fun main(args: Array<String>) {
     Statistics.reportStart()
 
     val parameters = ProgramParameters(args)
+
     val inputDirPath: Path = parameters.getInputDirectory(args)
     val outputDirPath: Path = createOutputDirectory()
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
@@ -15,6 +16,7 @@ fun main(args: Array<String>) {
     val filesToOrganize = deduplicate(filesWithTimestamps)
     organizeFiles(outputDirPath, filesToOrganize)
 
+    Statistics.reportStop()
     info(Statistics.generateReport())
 }
 

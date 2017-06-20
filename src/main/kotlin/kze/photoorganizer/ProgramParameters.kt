@@ -32,6 +32,6 @@ class ProgramParameters(args: Array<String>) {
     }
 
     private fun printProgramUsage() {
-        info("Usage: ./run.sh {directory-with-photos-to-process}")
+        info("Usage: ./run.sh {directory-with-files-to-process}")
     }
 }
