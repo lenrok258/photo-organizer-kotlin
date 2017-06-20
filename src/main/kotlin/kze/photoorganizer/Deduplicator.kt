@@ -5,7 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils
 
 
 fun deduplicate(filesWithWithTimestamps: List<FileWithTimestamp>): List<FileWithTimestamp> {
-    info("About to search for filesWithDuplicatedContent")
+    info("About to search for files with duplicated content")
     val result = ArrayList<FileWithTimestamp>()
     val hashesMap = HashMap<String, FileWithTimestamp>()
     for (file in filesWithWithTimestamps) {

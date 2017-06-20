@@ -14,12 +14,22 @@ object Statistics {
 
     private var extensionMap = HashMap<String, Int>()
 
+    fun reportStart() {
+        startMillis = System.currentTimeMillis()
+        info("Start")
+    }
+
+    fun reportStop() {
+        stopMillis = System.currentTimeMillis()
+        info("Stop")
+    }
+
     fun reportExtension(extension: String) {
         val value = extensionMap.getOrDefault(extension, 0)
         extensionMap.put(extension, value.inc())
     }
 
-    fun getReport(): String {
+    fun generateReport(): String {
 
         val duration = Duration.ofMillis(stopMillis - startMillis)
 

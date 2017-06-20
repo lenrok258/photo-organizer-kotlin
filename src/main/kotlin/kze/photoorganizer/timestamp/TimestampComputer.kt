@@ -13,6 +13,10 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+fun computeFilesWithTimestamps(listFilesPaths: List<Path>): List<FileWithTimestamp> {
+    return listFilesPaths
+            .map(::computeFileWithTimestamp)
+}
 
 fun computeFileWithTimestamp(path: Path): FileWithTimestamp {
     val datetime = obtainDatetimeFromEXIF(path) ?: obtainDatetimeFromFile(path)
