@@ -7,8 +7,9 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.stream.Collectors.toList
 
-fun createOutputDirectory(): Path {
-    val outputPath = Paths.get(OUTPUT_DIRECTORY_NAME)
+fun createOutputDirectory(inputDirPath: Path): Path {
+    val inputPathString = inputDirPath.toAbsolutePath().toString()
+    val outputPath = Paths.get(inputPathString, OUTPUT_DIRECTORY_NAME)
     return outputPath.apply {
         deleteDirectory(this.toFile())
         createDirectory(this)

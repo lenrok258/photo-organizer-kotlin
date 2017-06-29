@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
     val parameters = ProgramParameters(args)
 
     val inputDirPath: Path = parameters.getInputDirectory(args)
-    val outputDirPath: Path = createOutputDirectory()
+    val outputDirPath: Path = createOutputDirectory(inputDirPath)
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
     val filesWithTimestamps = computeFilesWithTimestamps(filesPaths)
     val filesToOrganize = deduplicate(filesWithTimestamps)

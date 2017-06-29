@@ -25,7 +25,7 @@ class ProgramParameters(args: Array<String>) {
 
     private fun validate(args: Array<String>) {
         if (args.size < 1) {
-            error("Missing required argument ")
+            error("Missing required argument")
             printProgramUsage()
             exitProcess(-1)
         }
