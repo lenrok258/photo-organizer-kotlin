@@ -10,7 +10,11 @@ import java.nio.file.Paths
 
 class ProgramParameters(args: Array<String>) {
 
-    private data class ParametersData(val inputDir: String, val useEXIF: Boolean)
+    private data class ParametersData(
+            val inputDir: String,
+            val useEXIF: Boolean,
+            val skipDuplicatesCheck: Boolean
+    )
 
     private val cmdLineOptions: Options
     private val parametersData: ParametersData
@@ -33,10 +37,17 @@ class ProgramParameters(args: Array<String>) {
         return useEXIF
     }
 
+    fun skipDuplicatesCheck(): Boolean {
+        val skipDuplicatesCheck = parametersData.skipDuplicatesCheck
+        info("Skip searching for and skipping duplicates=[$skipDuplicatesCheck]")
+        return skipDuplicatesCheck
+    }
+
     private fun createCmdLineOptions(): Options {
         return Options().apply {
             addRequiredOption("i", "input", true, "Input directory path")
             addOption("e", "exif", false, "Enable reading timestamps from EXIF metadata")
+            addOption("sdc", "skip-duplicates-check", false, "Skip searching for and skipping duplicates")
         }
     }
 
@@ -44,7 +55,10 @@ class ProgramParameters(args: Array<String>) {
         val parser = DefaultParser()
         try {
             val values = parser.parse(cmdLineOptions, cmdLineArgs)
-            return ParametersData(values.getOptionValue("i"), values.hasOption("e"))
+            return ParametersData(
+                    values.getOptionValue("i"),
+                    values.hasOption("e"),
+                    values.hasOption("sdc"))
         } catch(e: ParseException) {
             error(e.message ?: "")
             callForHelp()

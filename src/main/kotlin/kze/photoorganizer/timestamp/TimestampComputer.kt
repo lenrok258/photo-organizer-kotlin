@@ -12,6 +12,8 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.*
 
 fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Boolean): List<FileWithTimestamp> {
     return listFilesPaths
@@ -45,7 +47,7 @@ private fun fromEXIF(path: Path): LocalDateTime? {
             return null
         }
 
-        val dateTime = toLocalDatetime(date.toInstant());
+        val dateTime = toLocalDatetime(date);
         debug("EXIF timestamp [$dateTime] for a file [$path]")
         Statistics.datetimesFromEXIF++
         return dateTime
@@ -65,5 +67,13 @@ private fun fromFileAttributes(path: Path): LocalDateTime {
 
 private fun toLocalDatetime(instant: Instant): LocalDateTime {
     return LocalDateTime.ofInstant(instant, ZoneId.of("UTC"))
+}
+
+@Suppress("DEPRECATION")
+private fun toLocalDatetime(date: Date): LocalDateTime {
+    val zoneOffset = ZoneOffset.ofTotalSeconds(date.timezoneOffset * 60)
+    val zoneId = ZoneId.ofOffset("", zoneOffset)
+    debug("Time zone: $zoneId, zone offset: ${zoneOffset.totalSeconds}")
+    return LocalDateTime.ofInstant(date.toInstant(), zoneId)
 }
 
