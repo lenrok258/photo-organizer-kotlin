@@ -13,13 +13,17 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-fun computeFilesWithTimestamps(listFilesPaths: List<Path>): List<FileWithTimestamp> {
+fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Boolean): List<FileWithTimestamp> {
     return listFilesPaths
-            .map(::computeFileWithTimestamp)
+            .map { computeFileWithTimestamp(it, useEXIF) }
 }
 
-private fun computeFileWithTimestamp(path: Path): FileWithTimestamp {
-    val datetime = fromEXIF(path) ?: fromFileAttributes(path)
+private fun computeFileWithTimestamp(path: Path, useEXIF: Boolean): FileWithTimestamp {
+    val datetime = if (useEXIF) {
+        fromEXIF(path) ?: fromFileAttributes(path)
+    } else {
+        fromFileAttributes(path)
+    }
     return FileWithTimestamp(path, datetime)
 }
 
@@ -43,7 +47,7 @@ private fun fromEXIF(path: Path): LocalDateTime? {
 
         val dateTime = toLocalDatetime(date.toInstant());
         debug("EXIF timestamp [$dateTime] for a file [$path]")
-        Statistics.filesWithValidEXIFData++
+        Statistics.datetimesFromEXIF++
         return dateTime
     } catch (e: ImageProcessingException) {
         warn("Cannot obtain EXIF for [$path]")

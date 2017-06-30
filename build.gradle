@@ -25,6 +25,7 @@ dependencies {
     compile "commons-codec:commons-codec:1.10"
     compile "org.apache.commons:commons-lang3:3.0"
     compile "commons-io:commons-io:2.5"
+    compile "commons-cli:commons-cli:1.4"
 //    testCompile 'junit:junit:4.11'
 //    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }

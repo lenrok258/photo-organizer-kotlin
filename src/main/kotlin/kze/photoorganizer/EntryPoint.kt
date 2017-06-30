@@ -9,10 +9,10 @@ fun main(args: Array<String>) {
 
     val parameters = ProgramParameters(args)
 
-    val inputDirPath: Path = parameters.getInputDirectory(args)
+    val inputDirPath: Path = parameters.inputDirectory()
     val outputDirPath: Path = createOutputDirectory(inputDirPath)
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
-    val filesWithTimestamps = computeFilesWithTimestamps(filesPaths)
+    val filesWithTimestamps = computeFilesWithTimestamps(filesPaths, parameters.useEXIF())
     val filesToOrganize = deduplicate(filesWithTimestamps)
     organizeFiles(outputDirPath, filesToOrganize)
 

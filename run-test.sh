@@ -1,4 +1,4 @@
 #!/bin/bash
 
 rm -rf output
-./run.sh test-data
+./run.sh -i test-data $@

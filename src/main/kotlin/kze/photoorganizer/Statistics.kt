@@ -7,7 +7,7 @@ object Statistics {
     var startMillis = 0L
     var stopMillis = 0L
     var filesToOrganize = 0
-    var filesWithValidEXIFData = 0
+    var datetimesFromEXIF = 0
     var filesWithDuplicatedContent = 0
     var datetimesFromFileAttributes = 0
     var filesCopied = 0
@@ -38,7 +38,7 @@ object Statistics {
             |  Statistics
             |-----------------------------------------------------------------------------
             |  Number of input files            |  $filesToOrganize
-            |  Files with proper EXIF           |  $filesWithValidEXIFData
+            |  Datetimes from EXIF metadata     |  $datetimesFromEXIF
             |  Datetimes from file attributes   |  $datetimesFromFileAttributes
             |  Files with duplicated content    |  $filesWithDuplicatedContent
             |  Files copied                     |  $filesCopied
