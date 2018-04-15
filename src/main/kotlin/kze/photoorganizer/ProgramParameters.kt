@@ -13,7 +13,8 @@ class ProgramParameters(args: Array<String>) {
     private data class ParametersData(
             val inputDir: String,
             val useEXIF: Boolean,
-            val skipDuplicatesCheck: Boolean
+            val skipDuplicatesCheck: Boolean,
+            val timeOffsetInMinutes: String
     )
 
     private val cmdLineOptions: Options
@@ -43,11 +44,18 @@ class ProgramParameters(args: Array<String>) {
         return skipDuplicatesCheck
     }
 
+    fun timeOffsetInMinutes(): Int {
+        var timeOffsetInMinutes = parametersData.timeOffsetInMinutes
+        info("Time offset will be applied = [$timeOffsetInMinutes] minutes");
+        return timeOffsetInMinutes.toInt()
+    }
+
     private fun createCmdLineOptions(): Options {
         return Options().apply {
             addRequiredOption("i", "input", true, "Input directory path")
             addOption("e", "exif", false, "Enable reading timestamps from EXIF metadata")
             addOption("sdc", "skip-duplicates-check", false, "Skip searching for and skipping duplicates")
+            addOption("ato", "apply-time-offset", true, "Applies time offset in minutes")
         }
     }
 
@@ -58,8 +66,10 @@ class ProgramParameters(args: Array<String>) {
             return ParametersData(
                     values.getOptionValue("i"),
                     values.hasOption("e"),
-                    values.hasOption("sdc"))
-        } catch(e: ParseException) {
+                    values.hasOption("sdc"),
+                    if (values.hasOption("ato")) values.getOptionValue("ato") else "0"
+            )
+        } catch (e: ParseException) {
             error(e.message ?: "")
             callForHelp()
             System.exit(-1)

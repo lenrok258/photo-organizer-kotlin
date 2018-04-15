@@ -15,18 +15,19 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
-fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Boolean): List<FileWithTimestamp> {
+fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Boolean, timeOffsetInMinutes: Int): List<FileWithTimestamp> {
     return listFilesPaths
-            .map { computeFileWithTimestamp(it, useEXIF) }
+            .map { computeFileWithTimestamp(it, useEXIF, timeOffsetInMinutes) }
 }
 
-private fun computeFileWithTimestamp(path: Path, useEXIF: Boolean): FileWithTimestamp {
+private fun computeFileWithTimestamp(path: Path, useEXIF: Boolean, timeOffsetInMinutes: Int): FileWithTimestamp {
     val datetime = if (useEXIF) {
         fromEXIF(path) ?: fromFileAttributes(path)
     } else {
         fromFileAttributes(path)
     }
-    return FileWithTimestamp(path, datetime)
+    var datetimeWithOffset = applyTimeOffset(datetime, timeOffsetInMinutes)
+    return FileWithTimestamp(path, datetimeWithOffset)
 }
 
 private fun fromEXIF(path: Path): LocalDateTime? {
@@ -75,5 +76,15 @@ private fun toLocalDatetime(date: Date): LocalDateTime {
     val zoneId = ZoneId.ofOffset("", zoneOffset)
     debug("Time zone: $zoneId, zone offset: ${zoneOffset.totalSeconds}")
     return LocalDateTime.ofInstant(date.toInstant(), zoneId)
+}
+
+private fun applyTimeOffset(datetime: LocalDateTime, timeOffsetInMinutes: Int): LocalDateTime {
+    var timeWithOffset = datetime
+    if (timeOffsetInMinutes != 0) {
+        debug("Applying requested time offset in minutes: $timeOffsetInMinutes")
+        timeWithOffset = datetime.plusMinutes(timeOffsetInMinutes.toLong())
+        debug("Time before without offset: $datetime, time with offset: $timeWithOffset")
+    }
+    return timeWithOffset
 }
 

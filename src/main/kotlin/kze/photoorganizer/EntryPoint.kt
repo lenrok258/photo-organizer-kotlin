@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
     val inputDirPath: Path = parameters.inputDirectory()
     val outputDirPath: Path = createOutputDirectory(inputDirPath)
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
-    val filesWithTimestamps = computeFilesWithTimestamps(filesPaths, parameters.useEXIF())
+    val filesWithTimestamps = computeFilesWithTimestamps(filesPaths, parameters.useEXIF(), parameters.timeOffsetInMinutes())
     val filesToOrganize = if (parameters.skipDuplicatesCheck()) filesWithTimestamps else deduplicate(filesWithTimestamps)
     organizeFiles(outputDirPath, filesToOrganize)
 
