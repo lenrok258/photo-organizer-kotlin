@@ -3,8 +3,11 @@ package kze.photoorganizer
 import kze.photoorganizer.timestamp.FileWithTimestamp
 import org.apache.commons.lang3.StringUtils
 import java.nio.file.Files
+import java.nio.file.Files.copy
+import java.nio.file.Files.exists
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption.COPY_ATTRIBUTES
 import java.time.format.DateTimeFormatter
 
 fun organizeFiles(outputDir: Path, filesToOrganize: List<FileWithTimestamp>) {
@@ -41,13 +44,13 @@ private fun createTargetFilePath(targetDir: Path, fileWithTimestamp: FileWithTim
 private fun copyFile(fileWithTimestamp: FileWithTimestamp, targetPath: Path) {
     var targetPathNonExistence = targetPath // TwinPeaks reference
     var i = 1
-    while (Files.exists(targetPathNonExistence)) {
+    while (exists(targetPathNonExistence)) {
         targetPathNonExistence = computeTargetPathWithPostfix(targetPath, i++.toString())
         warn("Target file already exists. Trying version with postfix=[$targetPathNonExistence]")
     }
 
     info("[${fileWithTimestamp.filePath.fileName}] => [$targetPathNonExistence]")
-    Files.copy(fileWithTimestamp.filePath, targetPathNonExistence)
+    copy(fileWithTimestamp.filePath, targetPathNonExistence, COPY_ATTRIBUTES)
 
     var extension = targetPathNonExistence.toFile().extension
     Statistics.filesCopied++
