@@ -1,5 +1,6 @@
 package kze.photoorganizer
 
+import kze.photoorganizer.timestamp.FileWithTimestamp
 import kze.photoorganizer.timestamp.computeFilesWithTimestamps
 import java.nio.file.Path
 
@@ -12,7 +13,7 @@ fun main(args: Array<String>) {
     val inputDirPath: Path = parameters.inputDirectory()
     val outputDirPath: Path = createOutputDirectory(inputDirPath)
     val filesPaths: List<Path> = listFilesPaths(inputDirPath)
-    val filesWithTimestamps = computeFilesWithTimestamps(filesPaths, parameters.useEXIF(), parameters.timeOffsetInMinutes())
+    val filesWithTimestamps = computeFilesWithTimestamps(filesPaths, parameters)
     val filesToOrganize = if (parameters.skipDuplicatesCheck()) filesWithTimestamps else deduplicate(filesWithTimestamps)
     organizeFiles(outputDirPath, filesToOrganize)
 

@@ -3,9 +3,7 @@ package kze.photoorganizer.timestamp
 import com.drew.imaging.ImageMetadataReader
 import com.drew.imaging.ImageProcessingException
 import com.drew.metadata.exif.ExifSubIFDDirectory
-import kze.photoorganizer.Statistics
-import kze.photoorganizer.debug
-import kze.photoorganizer.warn
+import kze.photoorganizer.*
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
@@ -15,7 +13,22 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.*
 
-fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Boolean, timeOffsetInMinutes: Int): List<FileWithTimestamp> {
+fun computeFilesWithTimestamps(filePaths: List<Path>, parameters: ProgramParameters): List<FileWithTimestamp> {
+
+    // TODO: Detect profile name by scanning files and obtaining device name from EXIF
+    // TODO: Use videoTimeoffset from profile
+
+    val profile = profileByName(parameters.deviceProfileName().orEmpty())
+    if (profile != null) {
+        info("Profile found for device ${parameters.deviceProfileName()}. 'useExif' and 'timeOffsetInMins' will be overridden");
+        info("Profile: $profile")
+        return computeFilesWithTimestamps(filePaths, profile.photosUseExif, profile.photosTimeOffsetInMins)
+    } else {
+        return computeFilesWithTimestamps(filePaths, parameters.useEXIF(), parameters.timeOffsetInMinutes())
+    }
+}
+
+private fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Boolean, timeOffsetInMinutes: Int): List<FileWithTimestamp> {
     return listFilesPaths
             .map { computeFileWithTimestamp(it, useEXIF, timeOffsetInMinutes) }
 }
@@ -48,6 +61,7 @@ private fun fromEXIF(path: Path): LocalDateTime? {
             return null
         }
 
+        // TODO: Not user if timezone makes sense and works as expected - investigate
         val dateTime = toLocalDatetime(date);
         debug("EXIF timestamp [$dateTime] for a file [$path]")
         Statistics.datetimesFromEXIF++

@@ -7,6 +7,7 @@ import org.apache.commons.cli.ParseException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.system.exitProcess
 
 class ProgramParameters(args: Array<String>) {
 
@@ -14,7 +15,8 @@ class ProgramParameters(args: Array<String>) {
             val inputDir: String,
             val useEXIF: Boolean,
             val skipDuplicatesCheck: Boolean,
-            val timeOffsetInMinutes: String
+            val timeOffsetInMinutes: String,
+            val deviceProfile: String?
     )
 
     private val cmdLineOptions: Options
@@ -45,9 +47,15 @@ class ProgramParameters(args: Array<String>) {
     }
 
     fun timeOffsetInMinutes(): Int {
-        var timeOffsetInMinutes = parametersData.timeOffsetInMinutes
+        val timeOffsetInMinutes = parametersData.timeOffsetInMinutes
         info("Time offset will be applied = [$timeOffsetInMinutes] minutes");
         return timeOffsetInMinutes.toInt()
+    }
+
+    fun deviceProfileName(): String? {
+        val profileName = parametersData.deviceProfile
+        info("Device profile name = [$profileName]");
+        return profileName;
     }
 
     private fun createCmdLineOptions(): Options {
@@ -56,6 +64,7 @@ class ProgramParameters(args: Array<String>) {
             addOption("e", "exif", false, "Enable reading timestamps from EXIF metadata")
             addOption("sdc", "skip-duplicates-check", false, "Skip searching for and skipping duplicates")
             addOption("ato", "apply-time-offset", true, "Applies time offset in minutes")
+            addOption("dp", "device-profile", true, "Selects predefined device profile")
         }
     }
 
@@ -67,12 +76,13 @@ class ProgramParameters(args: Array<String>) {
                     values.getOptionValue("i"),
                     values.hasOption("e"),
                     values.hasOption("sdc"),
-                    if (values.hasOption("ato")) values.getOptionValue("ato") else "0"
+                    if (values.hasOption("ato")) values.getOptionValue("ato") else "0",
+                    if (values.hasOption("dp")) values.getOptionValue("dp") else null
             )
         } catch (e: ParseException) {
             error(e.message ?: "")
             callForHelp()
-            System.exit(-1)
+            exitProcess(-1)
         }
         throw IllegalStateException("Not gonna happen")
     }
@@ -91,7 +101,7 @@ class ProgramParameters(args: Array<String>) {
     private fun exitWithErrorMessage(errorMessage: String) {
         error(errorMessage)
         callForHelp()
-        System.exit(-1)
+        exitProcess(-1)
     }
 
     private fun callForHelp() { // intentional Twin Peaks reference
