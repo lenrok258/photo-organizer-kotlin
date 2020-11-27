@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.1.2'
+    ext.kotlin_version = '1.4.20'
     repositories {
         jcenter()
     }
@@ -20,12 +20,12 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "com.drewnoakes:metadata-extractor:2.10.1"
-    compile "commons-codec:commons-codec:1.10"
-    compile "org.apache.commons:commons-lang3:3.0"
-    compile "commons-io:commons-io:2.5"
-    compile "commons-cli:commons-cli:1.4"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "com.drewnoakes:metadata-extractor:2.10.1"
+    implementation "commons-codec:commons-codec:1.10"
+    implementation "org.apache.commons:commons-lang3:3.0"
+    implementation "commons-io:commons-io:2.5"
+    implementation "commons-cli:commons-cli:1.4"
 //    testCompile 'junit:junit:4.11'
 //    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }

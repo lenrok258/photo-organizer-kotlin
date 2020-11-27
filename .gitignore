@@ -4,3 +4,8 @@
 build/
 test-data/_organized/
 out/
+.classpath
+.project
+.settings/
+.vscode/
+bin/

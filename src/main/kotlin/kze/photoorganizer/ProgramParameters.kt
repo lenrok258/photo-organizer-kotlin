@@ -84,7 +84,6 @@ class ProgramParameters(args: Array<String>) {
             callForHelp()
             exitProcess(-1)
         }
-        throw IllegalStateException("Not gonna happen")
     }
 
     private fun validate(parametersData: ParametersData) {
