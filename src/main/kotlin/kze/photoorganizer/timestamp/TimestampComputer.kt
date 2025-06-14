@@ -53,7 +53,7 @@ private fun computeFileWithTimestamp(path: Path, useEXIF: Boolean, timeOffsetInM
 
 fun obtainTimestampFromFilename(path: Path): Optional<LocalDateTime>  {
     return try {
-        val nameWithoutExtension = path.toFile().nameWithoutExtension
+        val nameWithoutExtension = path.toFile().nameWithoutExtension.substring(0, 19)
         val localDateTime = LocalDateTime.parse(nameWithoutExtension, DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss"))
         debug("Timestamp [$localDateTime] obtained from filename for a file [$path]")
         Statistics.datetimesFromFilename++
