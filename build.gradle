@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.6.21'
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -16,15 +16,15 @@ mainClassName = 'kze.photoorganizer.EntryPointKt'
 defaultTasks 'run'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "com.drewnoakes:metadata-extractor:2.10.1"
-    implementation "commons-codec:commons-codec:1.10"
+    implementation 'com.drewnoakes:metadata-extractor:2.18.0'
+    implementation 'commons-codec:commons-codec:1.13'
     implementation "org.apache.commons:commons-lang3:3.0"
-    implementation "commons-io:commons-io:2.5"
+    implementation 'commons-io:commons-io:2.14.0'
     implementation "commons-cli:commons-cli:1.4"
 //    testCompile 'junit:junit:4.11'
 //    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
