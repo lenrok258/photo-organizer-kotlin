@@ -54,7 +54,8 @@ class ProgramParameters(args: Array<String>) {
     private fun createCmdLineOptions(): Options {
         return Options().apply {
             addRequiredOption("i", "input", true, "Input directory path")
-            addOption("e", "exif", false, "Enable reading timestamps from EXIF metadata")
+            addOption("e", "exif", false, "Enable reading timestamps from EXIF metadata (enabled by default)")
+            addOption("ne", "no-exif", false, "Disable reading timestamps from EXIF metadata")
             addOption("sdc", "skip-duplicates-check", false, "Skip searching for and skipping duplicates")
             addOption("ato", "apply-time-offset", true, "Applies time offset in minutes")
         }
@@ -66,7 +67,7 @@ class ProgramParameters(args: Array<String>) {
             val values = parser.parse(cmdLineOptions, cmdLineArgs)
             return ParametersData(
                     values.getOptionValue("i"),
-                    values.hasOption("e"),
+                    !values.hasOption("ne"),
                     values.hasOption("sdc"),
                     if (values.hasOption("ato")) values.getOptionValue("ato") else "0"
             )
