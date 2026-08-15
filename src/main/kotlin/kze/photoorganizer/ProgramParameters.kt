@@ -15,8 +15,7 @@ class ProgramParameters(args: Array<String>) {
             val inputDir: String,
             val useEXIF: Boolean,
             val skipDuplicatesCheck: Boolean,
-            val timeOffsetInMinutes: String,
-            val deviceProfile: String?
+            val timeOffsetInMinutes: String
     )
 
     private val cmdLineOptions: Options
@@ -52,19 +51,12 @@ class ProgramParameters(args: Array<String>) {
         return timeOffsetInMinutes.toInt()
     }
 
-    fun deviceProfileName(): String? {
-        val profileName = parametersData.deviceProfile
-        info("Device profile name = [$profileName]");
-        return profileName;
-    }
-
     private fun createCmdLineOptions(): Options {
         return Options().apply {
             addRequiredOption("i", "input", true, "Input directory path")
             addOption("e", "exif", false, "Enable reading timestamps from EXIF metadata")
             addOption("sdc", "skip-duplicates-check", false, "Skip searching for and skipping duplicates")
             addOption("ato", "apply-time-offset", true, "Applies time offset in minutes")
-            addOption("dp", "device-profile", true, "Selects predefined device profile")
         }
     }
 
@@ -76,8 +68,7 @@ class ProgramParameters(args: Array<String>) {
                     values.getOptionValue("i"),
                     values.hasOption("e"),
                     values.hasOption("sdc"),
-                    if (values.hasOption("ato")) values.getOptionValue("ato") else "0",
-                    if (values.hasOption("dp")) values.getOptionValue("dp") else null
+                    if (values.hasOption("ato")) values.getOptionValue("ato") else "0"
             )
         } catch (e: ParseException) {
             error(e.message ?: "")

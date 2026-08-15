@@ -25,16 +25,9 @@ data class FileMetadata(
 
 fun computeFilesWithTimestamps(filePaths: List<Path>, parameters: ProgramParameters): List<FileWithTimestamp> {
 
-    val profile = profileByName(parameters.deviceProfileName().orEmpty())
-    val useExif = if (profile != null) {
-        info("Profile found for device ${parameters.deviceProfileName()}. 'useExif' and 'timeOffsetInMins' will be overridden")
-        info("Profile: $profile")
-        profile.photosUseExif
-    } else {
-        parameters.useEXIF()
-    }
+    val useExif = parameters.useEXIF()
 
-    val timeOffsetInMinutes = if (profile != null) profile.photosTimeOffsetInMins else parameters.timeOffsetInMinutes()
+    val timeOffsetInMinutes = parameters.timeOffsetInMinutes()
 
     // Faza 1: Wczytaj surowe metadane
     val metadata = filePaths.map { loadFileMetadata(it, useExif) }
