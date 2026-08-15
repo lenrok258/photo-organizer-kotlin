@@ -11,10 +11,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.Optional.empty
-import kotlin.io.nameWithoutExtension
 
 fun computeFilesWithTimestamps(filePaths: List<Path>, parameters: ProgramParameters): List<FileWithTimestamp> {
 
@@ -37,30 +34,13 @@ private fun computeFilesWithTimestamps(listFilesPaths: List<Path>, useEXIF: Bool
 }
 
 private fun computeFileWithTimestamp(path: Path, useEXIF: Boolean, timeOffsetInMinutes: Int): FileWithTimestamp {
-    // first, try to obtain timestamp from file's name
-    val timestampFromName: Optional<LocalDateTime> = obtainTimestampFromFilename(path)
-
-    val datetime = if (timestampFromName.isPresent) {
-        timestampFromName.get()
-    } else if (useEXIF) {
+    val datetime = if (useEXIF) {
         fromEXIF(path) ?: fromFileAttributes(path)
     } else {
         fromFileAttributes(path)
     }
     val datetimeWithOffset = applyTimeOffset(datetime, timeOffsetInMinutes)
     return FileWithTimestamp(path, datetimeWithOffset)
-}
-
-fun obtainTimestampFromFilename(path: Path): Optional<LocalDateTime>  {
-    return try {
-        val nameWithoutExtension = path.toFile().nameWithoutExtension.substring(0, 19)
-        val localDateTime = LocalDateTime.parse(nameWithoutExtension, DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss"))
-        debug("Timestamp [$localDateTime] obtained from filename for a file [$path]")
-        Statistics.datetimesFromFilename++
-        Optional.of(localDateTime)
-    } catch (e: Exception) {
-        empty()
-    }
 }
 
 private fun fromEXIF(path: Path): LocalDateTime? {
