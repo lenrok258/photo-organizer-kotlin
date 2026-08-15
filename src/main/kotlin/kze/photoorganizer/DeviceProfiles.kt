@@ -3,7 +3,7 @@ package kze.photoorganizer
 data class DeviceProfile(
         val photosUseExif: Boolean,
         val photosTimeOffsetInMins: Int,
-        val videosTimeoffsetInMins: Int // TODO: Implement
+        val videosTimeoffsetInMins: Int
 )
 
 private val devices = mapOf(
